@@ -1,0 +1,9 @@
+# Committed blank. The file you fill is config/terraform.tfvars.
+# Do not copy interview_helper_mux/config/terraform.tfvars. That file is the podcast bucket.
+
+project_name            = ""
+environment             = "prod"
+aws_region              = "us-east-1"
+s3_bucket_name          = ""
+domain_name             = ""
+cloudfront_price_class  = "PriceClass_100"

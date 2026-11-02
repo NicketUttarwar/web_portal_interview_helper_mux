@@ -1,0 +1,10 @@
+/config/secrets/
+/ASSETS/*
+!/ASSETS/.gitkeep
+.venv
+config/terraform.tfvars
+*.tfstate
+!terraform/state/terraform.tfstate
+*.tfstate.*
+.terraform/
+.terraform.tfstate.lock.info

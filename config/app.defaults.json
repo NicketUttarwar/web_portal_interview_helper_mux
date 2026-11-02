@@ -1,0 +1,7 @@
+{
+  "assets_dir": "ASSETS",
+  "job_dir_pattern": "ASSETS/jobs/{job_id}",
+  "product_dir": "interview_helper_mux",
+  "secrets_file": "config/secrets/secrets.env",
+  "terraform_var_file": "config/terraform.tfvars"
+}
