@@ -7,3 +7,17 @@ aws_region              = "us-east-1"
 s3_bucket_name          = ""
 domain_name             = ""
 cloudfront_price_class  = "PriceClass_100"
+
+# Phone format is +[country code].[number], for example +1.4155550100.
+# state is the two-letter code. country_code is the two-letter code.
+registrant = {
+  first_name     = ""
+  last_name      = ""
+  email          = ""
+  phone_number   = ""
+  address_line_1 = ""
+  city           = ""
+  state          = ""
+  zip_code       = ""
+  country_code   = "US"
+}

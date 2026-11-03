@@ -1,6 +1,6 @@
 # Repository scaffold
 
-This file is the contract for how the repository is laid out and how the code will be built. Config templates, gitignore, `ASSETS/.gitkeep`, and `terraform/state/` exist. Application code, Terraform resources, and scripts do not.
+This file is the contract for how the repository is laid out and how the code will be built. Config templates, gitignore, `ASSETS/.gitkeep`, and `terraform/state/` exist. Application code and Terraform resources do not. `scripts/check_aws_permissions.py` checks the IAM user against the AWS services in the README.
 
 ## Intended tree
 
@@ -14,9 +14,8 @@ This file is the contract for how the repository is laid out and how the code wi
 - `scripts/bootstrap_venv.sh` — create the virtualenv
 - `scripts/run.sh` — start the app
 - `scripts/tf-*.sh` — the only way to run Terraform
-- `site/` — static page
-- `lambda/` — HTTP API
-- `agent/` — local executable and command allowlist
+- `site/` — static page, including the queue HTML
+- `agent/` — local Python queue, command allowlist, and periodic upload to S3
 - `docs/overview.md` — what the product is
 - `docs/repository.md` — this file
 
@@ -36,9 +35,9 @@ The first keys, when that file is added:
 
 ## Secrets
 
-Credentials go only in `config/secrets/secrets.env`. That includes the agent bearer key and the AWS credentials. Gitignore the whole `config/secrets/` directory. Commit a blank template at `config/templates/secrets.env.example`.
+Credentials go only in `config/secrets/secrets.env`. That is the AWS credentials the local app uses to upload the queue HTML. Gitignore the whole `config/secrets/` directory. Commit a blank template at `config/templates/secrets.env.example`.
 
-Code reads `config/secrets/secrets.env` for itself. It does not export that file onto the whole process environment. A job process does not receive the agent key or the AWS credentials.
+Code reads `config/secrets/secrets.env` for itself. It does not export that file onto the whole process environment. A job process does not receive the AWS credentials.
 
 Terraform wrappers are the one loader that reads the file in order to pass credentials into Terraform. They do not dump those values into the shell for every later command.
 
@@ -48,7 +47,7 @@ Terraform wrappers are the one loader that reads the file in order to pass crede
 
 ## Terraform
 
-Infrastructure is Terraform on AWS: a private S3 origin, CloudFront, ACM, the HTTP API, and the queue table. The region is `us-east-1`, because CloudFront certificates are issued there. The app does not require the AWS CLI or `aws login`.
+Infrastructure is Terraform on AWS: a private S3 origin, CloudFront, ACM, and Route 53. The region is `us-east-1`, because CloudFront certificates are issued there. The queue stays in the local Python app, which uploads the latest queue HTML to S3 on a period. The app does not require the AWS CLI or `aws login`. There is no DynamoDB, API Gateway, Lambda, or CloudWatch.
 
 When Terraform exists:
 
@@ -68,25 +67,24 @@ Portal code uses the stacks, structures, and frameworks below. `product_dir` is 
 
 ### Stacks
 
-- Python 3.12 for the API and the local executable. Direct dependencies are pinned, and the lockfile is what bootstrap installs.
-- The site is React, TypeScript, and Vite. Client payloads are checked with Zod. Styles live in one CSS file.
-- Infrastructure is Terraform on AWS. Runtime calls to S3 and DynamoDB use boto3 with credentials from `config/secrets/secrets.env`.
+- Python 3.12 for the local queue and the periodic publisher. Direct dependencies are pinned, and the lockfile is what bootstrap installs.
+- The site is React, TypeScript, and Vite. Styles live in one CSS file.
+- Infrastructure is Terraform on AWS. The local app uploads the queue HTML with boto3 and credentials from `config/secrets/secrets.env`.
 - Tests are pytest for Python and Vitest for the site.
 
 ### Structures
 
-- Python lives in one package under `src/`. Modules split by job: submit and claim, the command allowlist, the job folder, and the publish back to the site. Request bodies, status rows, and files written as JSON are pydantic models.
-- The site lives in `site/`. Screens are function components under `site/src/components/`. Shared queue state sits in one context. The Vite build is what CloudFront serves.
-- Terraform is one file per resource family: S3, CloudFront, ACM, the HTTP API, Lambda, DynamoDB, and IAM. Wrappers in `scripts/tf-*.sh` are the only entry.
+- Python lives in one package under `src/`. Modules split by job: the local queue, the command allowlist, the job folder, and the periodic HTML upload to S3. Status rows and files written as JSON are pydantic models.
+- The site lives in `site/`. Screens are function components under `site/src/components/`. The Vite build is what CloudFront serves. The local app overwrites the queue HTML in that build's bucket on a period.
+- Terraform is one file per resource family: S3, CloudFront, ACM, and Route 53. Wrappers in `scripts/tf-*.sh` are the only entry.
 - Tests live in `tests/`, next to the behavior they lock.
 
 ### Frameworks
 
 | Layer | Framework |
 |---|---|
-| HTTP handlers | Python functions with pydantic models, behind API Gateway |
-| Local executable | A Typer command that owns the poll loop and the allowlist |
-| Site | React function components, TypeScript, Vite, Zod |
+| Local queue | A Python process that owns the queue, the allowlist, and the periodic S3 upload |
+| Site | React function components, TypeScript, Vite |
 | AWS infra | Terraform |
 | AWS from code | boto3 |
 | Python tests | pytest |
