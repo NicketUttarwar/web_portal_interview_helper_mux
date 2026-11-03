@@ -2,6 +2,7 @@
 /ASSETS/*
 !/ASSETS/.gitkeep
 .venv
+/queue.txt
 config/terraform.tfvars
 *.tfstate
 !terraform/state/terraform.tfstate

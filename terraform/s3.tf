@@ -21,6 +21,18 @@ resource "aws_s3_bucket_ownership_controls" "zero_shot_media_website" {
   }
 }
 
+resource "aws_s3_bucket_cors_configuration" "zero_shot_media_website" {
+  bucket = aws_s3_bucket.zero_shot_media_website.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["GET", "HEAD", "POST", "PUT"]
+    allowed_origins = ["https://zeroshot.media"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 300
+  }
+}
+
 resource "aws_s3_object" "index" {
   bucket       = aws_s3_bucket.zero_shot_media_website.id
   key          = "index.html"

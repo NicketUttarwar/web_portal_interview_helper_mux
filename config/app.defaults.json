@@ -3,5 +3,14 @@
   "job_dir_pattern": "ASSETS/jobs/{job_id}",
   "product_dir": "interview_helper_mux",
   "secrets_file": "config/secrets/secrets.env",
-  "terraform_var_file": "config/terraform.tfvars"
+  "terraform_var_file": "config/terraform.tfvars",
+  "publish_interval_seconds": 15,
+  "queue_object_key": "queue.html",
+  "queue_state_file": "ASSETS/queue.json",
+  "inbox_dir": "ASSETS/inbox",
+  "job_timeout_seconds": 60,
+  "status_object_key": "status.json",
+  "status_interval_seconds": 5,
+  "status_ttl_seconds": 12,
+  "queue_text_file": "queue.txt"
 }
