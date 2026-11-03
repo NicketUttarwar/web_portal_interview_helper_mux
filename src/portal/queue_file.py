@@ -148,6 +148,35 @@ def _replace_lines(path: Path, lines: list[str]) -> None:
             temporary.unlink(missing_ok=True)
 
 
+def remove_queue(path: Path, url: str) -> str:
+    """Remove one video from the queue.
+
+    Returns ``removed``, ``absent`` when it was not in the file, or ``busy``
+    when another writer holds the sidecar lock. A busy result waits for the
+    next poll instead of blocking the bridge.
+    """
+    stored = _queue_key(url)
+    if not stored or not path.is_file():
+        return "absent"
+    handle = _try_lock(path, wait_seconds=0)
+    if handle is None:
+        return "busy"
+    try:
+        kept: list[str] = []
+        removed = False
+        for entry_url, entry_title, entry_lookup in read_entries(path):
+            if _queue_key(entry_url) == stored:
+                removed = True
+                continue
+            kept.append(_format_line(entry_url, entry_title, entry_lookup))
+        if not removed:
+            return "absent"
+        _replace_lines(path, kept)
+        return "removed"
+    finally:
+        _unlock(handle)
+
+
 def append_queue(path: Path, url: str) -> bool:
     """Append the URL. Return False when that video is already in the file."""
     stored = _queue_key(url)

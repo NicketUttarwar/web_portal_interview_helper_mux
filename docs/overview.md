@@ -32,6 +32,8 @@ On a period the app renders the latest queue into the site HTML and uploads that
 
 The app creates a fresh folder under `ASSETS/` for each job and starts the allowlisted command for that job. The command may spawn subprocesses. Those children stay in the job's process group and end with the job. The first handler is `echo`: it writes the payload into the job folder and exits.
 
+The YouTube list in `queue.txt` is drained by this same process, one URL at a time. The child is a full-auto episode in the `interview_helper_mux` checkout: that checkout's `.venv/bin/python -m interview_mux orchestrate --mode full-auto --url`. The URL stays on the public page while the child runs. When the child exits, the portal writes the outcome under `ASSETS/orchestrations/` and removes the URL, waits five seconds, and starts the next one. An empty list waits for a new URL. The contract is [queue-orchestrator.md](queue-orchestrator.md).
+
 The allowlisted product checkout is the directory `interview_helper_mux`. The app starts that product from that directory. This overview names the directory. The product that lives there keeps its own documentation.
 
 Per-job files, including those work folders, stay under `ASSETS/`. See [repository.md](repository.md) for the path keys, and for the stacks, structures, and frameworks the portal code is written in.

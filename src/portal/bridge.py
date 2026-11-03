@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from portal.config import Settings, load_settings
 from portal.jobs import run_one
+from portal.orchestrate_queue import QueueOrchestrator
 from portal.publish import QueuePublisher
 from portal.store import acquire_bridge_lock, list_visible, load_state
 from portal.title_lookup import TitleLookups
@@ -28,6 +29,7 @@ def serve(settings: Settings | None = None) -> int:
 
     publisher = QueuePublisher(settings)
     titles = TitleLookups(settings)
+    episodes = QueueOrchestrator(settings)
     run_id = uuid4().hex
     print(
         "Bridge running. The website light stays on while this process is alive. "
@@ -42,7 +44,9 @@ def serve(settings: Settings | None = None) -> int:
     last_status = time.monotonic()
     try:
         while not stop:
-            changed = run_one(settings) is not None
+            changed = episodes.poll()
+            if run_one(settings) is not None:
+                changed = True
             if publisher.accept_uploads(run_id):
                 changed = True
             titles.spawn_missing()
@@ -57,6 +61,7 @@ def serve(settings: Settings | None = None) -> int:
                 break
             time.sleep(0.4)
     finally:
+        episodes.stop()
         titles.stop()
         publisher.publish_presence(active=False, run_id=run_id)
         publisher.discard_uploads(run_id)

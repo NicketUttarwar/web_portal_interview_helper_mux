@@ -13,5 +13,7 @@
   "status_interval_seconds": 5,
   "status_ttl_seconds": 12,
   "queue_text_file": "queue.txt",
-  "title_lookup_timeout_seconds": 30
+  "title_lookup_timeout_seconds": 30,
+  "orchestrations_dir": "ASSETS/orchestrations",
+  "orchestrate_gap_seconds": 5
 }

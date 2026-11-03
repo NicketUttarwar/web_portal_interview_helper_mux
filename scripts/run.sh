@@ -6,6 +6,9 @@
 #                                            After a YouTube URL is accepted, a
 #                                            child process looks up its title and
 #                                            writes that title back onto the queue.
+#                                            The first URL also starts full-auto
+#                                            in interview_helper_mux. When that
+#                                            child exits, the URL leaves the queue.
 #   ./scripts/run.sh enqueue echo hello      Add one job. The bridge claims it.
 #   ./scripts/run.sh status                  Print the local queue.
 #

@@ -30,6 +30,8 @@ The first keys, when that file is added:
 - `assets_dir` — `ASSETS`, the root for local files that stay out of git.
 - `job_dir_pattern` — `ASSETS/jobs/{job_id}`, one fresh folder per claimed job.
 - `product_dir` — `interview_helper_mux`, the checkout the allowlisted command runs from.
+- `orchestrations_dir` — `ASSETS/orchestrations`, one folder per full-auto attempt plus `current.json` for the living child.
+- `orchestrate_gap_seconds` — `5`, the pause after one YouTube URL leaves the queue and before the next starts.
 - `secrets_file` — `config/secrets/secrets.env`.
 - `terraform_var_file` — `config/terraform.tfvars`.
 
