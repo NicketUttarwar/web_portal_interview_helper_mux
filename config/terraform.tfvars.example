@@ -4,7 +4,7 @@
 project_name            = ""
 environment             = "prod"
 aws_region              = "us-east-1"
-s3_bucket_name          = ""
+s3_bucket_name          = "zero-shot-media-website-bucket"
 domain_name             = ""
 cloudfront_price_class  = "PriceClass_100"
 

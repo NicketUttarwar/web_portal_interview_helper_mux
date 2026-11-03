@@ -3,8 +3,27 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "project_name" {
+  type    = string
+  default = "zero-shot-media-website"
+}
+
+variable "environment" {
+  type    = string
+  default = "prod"
+}
+
 variable "domain_name" {
   type = string
+}
+
+variable "s3_bucket_name" {
+  type = string
+}
+
+variable "cloudfront_price_class" {
+  type    = string
+  default = "PriceClass_100"
 }
 
 variable "registrant" {
