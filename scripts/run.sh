@@ -3,6 +3,9 @@
 #
 #   ./scripts/run.sh                         Stay in this terminal. Keep the local
 #                                            queue and the website queue in step.
+#                                            After a YouTube URL is accepted, a
+#                                            child process looks up its title and
+#                                            writes that title back onto the queue.
 #   ./scripts/run.sh enqueue echo hello      Add one job. The bridge claims it.
 #   ./scripts/run.sh status                  Print the local queue.
 #

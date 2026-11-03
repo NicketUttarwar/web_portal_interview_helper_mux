@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 from datetime import datetime, timezone
@@ -10,7 +11,7 @@ import boto3
 from botocore.config import Config
 from botocore.exceptions import BotoCoreError, ClientError
 
-from portal.queue_file import append_queue, read_queue, youtube_url
+from portal.queue_file import append_queue, read_entries, youtube_url
 from portal.store import enqueue
 
 from portal.config import MAX_PAYLOAD_CHARS, Settings, read_secrets, read_tf_assignment
@@ -94,6 +95,7 @@ class QueuePublisher:
         self._client = client
         self._last_body: str | None = None
         self._last_error: str | None = None
+        self._site_digest: str | None = None
 
     def publish(self, jobs: list[Job]) -> str | None:
         body = render_queue_html(jobs)
@@ -115,6 +117,28 @@ class QueuePublisher:
         )
         return None
 
+    def publish_site_page(self) -> str | None:
+        """Upload the homepage that renders a URL and its looked-up title.
+
+        status.json already carries the title. An older homepage only prints
+        the URL, so the title stays invisible until this page is current.
+        """
+        path = self.settings.root / "site" / "index.html"
+        if not path.is_file():
+            return None
+        body = path.read_bytes()
+        digest = hashlib.md5(body).hexdigest()
+        if digest == self._site_digest:
+            return None
+        try:
+            self._put("index.html", body, "text/html; charset=utf-8")
+        except (BotoCoreError, ClientError, RuntimeError, OSError) as exc:
+            return self._note_error(exc, "Site page upload failed")
+        self._site_digest = digest
+        self._last_error = None
+        print("Published site page index.html.", flush=True)
+        return None
+
     def publish_presence(self, *, active: bool, run_id: str) -> str | None:
         """Tell the site whether this process is up and can take text."""
         try:
@@ -124,6 +148,10 @@ class QueuePublisher:
             active = False
             self._note_error(exc, "Intake link failed")
         live = bool(active and upload)
+        entries = [
+            {"url": url, "title": title, "lookup": lookup}
+            for url, title, lookup in reversed(read_entries(self.settings.queue_text_file))
+        ]
         document = {
             "active": live,
             "queue_live": live,
@@ -132,7 +160,8 @@ class QueuePublisher:
             "ttl_seconds": int(self.settings.status_ttl_seconds),
             "run_id": run_id if live else "",
             "upload": upload,
-            "queue": list(reversed(read_queue(self.settings.queue_text_file))),
+            "queue": [item["url"] for item in entries],
+            "entries": entries,
         }
         try:
             self._put(

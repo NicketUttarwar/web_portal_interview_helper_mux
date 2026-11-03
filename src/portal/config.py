@@ -27,6 +27,7 @@ class Settings:
     status_interval_seconds: float = 5
     status_ttl_seconds: float = 12
     queue_text_file: Path = Path("queue.txt")
+    title_lookup_timeout_seconds: float = 30
 
     def job_dir(self, job_id: str) -> Path:
         relative = self.job_dir_pattern.format(job_id=job_id)
@@ -59,6 +60,7 @@ def load_settings(root: Path | None = None) -> Settings:
         status_interval_seconds=float(defaults.get("status_interval_seconds", 5)),
         status_ttl_seconds=float(defaults.get("status_ttl_seconds", 12)),
         queue_text_file=_under_root(repo, str(defaults.get("queue_text_file", "queue.txt"))),
+        title_lookup_timeout_seconds=float(defaults.get("title_lookup_timeout_seconds", 30)),
     )
 
 

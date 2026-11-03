@@ -10,6 +10,7 @@ from portal.config import Settings, load_settings
 from portal.jobs import run_one
 from portal.publish import QueuePublisher
 from portal.store import acquire_bridge_lock, list_visible, load_state
+from portal.title_lookup import TitleLookups
 
 
 def serve(settings: Settings | None = None) -> int:
@@ -26,6 +27,7 @@ def serve(settings: Settings | None = None) -> int:
         signal.signal(caught, request_stop)
 
     publisher = QueuePublisher(settings)
+    titles = TitleLookups(settings)
     run_id = uuid4().hex
     print(
         "Bridge running. The website light stays on while this process is alive. "
@@ -33,6 +35,7 @@ def serve(settings: Settings | None = None) -> int:
         flush=True,
     )
     publisher.discard_uploads()
+    publisher.publish_site_page()
     publisher.publish_presence(active=True, run_id=run_id)
     _publish(publisher, settings)
     last_publish = time.monotonic()
@@ -42,17 +45,19 @@ def serve(settings: Settings | None = None) -> int:
             changed = run_one(settings) is not None
             if publisher.accept_uploads(run_id):
                 changed = True
+            titles.spawn_missing()
             now = time.monotonic()
             if changed or now - last_publish >= settings.publish_interval_seconds:
                 _publish(publisher, settings)
                 last_publish = now
-            if now - last_status >= settings.status_interval_seconds:
+            if titles.poll() or now - last_status >= settings.status_interval_seconds:
                 publisher.publish_presence(active=True, run_id=run_id)
                 last_status = now
             if stop:
                 break
             time.sleep(0.4)
     finally:
+        titles.stop()
         publisher.publish_presence(active=False, run_id=run_id)
         publisher.discard_uploads(run_id)
         _publish(publisher, settings)

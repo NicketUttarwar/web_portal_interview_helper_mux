@@ -85,9 +85,15 @@ html.motion .intake-wave span{animation:desk-bar 1.05s ease-in-out infinite}
 .url-board{margin-top:28px;max-height:320px;overflow:auto;padding:16px;border:1px solid #2a3344;border-radius:16px;background:#12151c}
 .submit-url[data-queue="down"] .url-board{background:#10131a;border-color:#2a3142}
 .url-board .desk-kicker{margin:0 0 12px}
-.url-queue{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.url-queue li{padding:12px 14px;border:1px solid #2a3344;border-radius:12px;background:#171b26;color:#d5deee;word-break:break-all}
-.submit-url[data-queue="live"] .url-queue li{background:#10141f;color:#f5f8ff;border-color:#1c2433}
+.url-table{width:100%;border-collapse:collapse}
+.url-table th{text-align:left;padding:0 14px 10px;color:#5a6478;font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.url-table td{padding:12px 14px;border-top:1px solid #2a3344;vertical-align:top;background:#171b26;color:#d5deee}
+.url-table td:first-child{word-break:break-all}
+.url-table .url-title{color:#f5f8ff}
+.url-table .url-title.is-pending{color:#a3b0c7}
+.submit-url[data-queue="live"] .url-table td{background:#10141f;color:#f5f8ff;border-color:#1c2433}
+@media (max-width:700px){.url-table,.url-table thead,.url-table tbody,.url-table tr,.url-table th,.url-table td{display:block}.url-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.url-table td{border-top:0}.url-table tr{border:1px solid #2a3344;border-radius:12px;overflow:hidden;margin-bottom:8px}.url-table td:first-child{font-size:14px;padding-bottom:0}.url-table td:first-child::before{content:"URL";display:block;margin-bottom:4px;color:#5a6478;font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.08em}.url-table td:last-child::before{content:"Title";display:block;margin-bottom:4px;color:#5a6478;font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.08em}}
+.url-how{margin:0 0 14px;color:#a3b0c7;font-size:15px}
 .url-empty{margin:0;color:#a3b0c7}
 @media (max-width:700px){.url-form{grid-template-columns:1fr}#url-submit{width:100%}}
 .intake-wave span:nth-child(2){animation-delay:.08s}.intake-wave span:nth-child(3){animation-delay:.16s}.intake-wave span:nth-child(4){animation-delay:.04s}.intake-wave span:nth-child(5){animation-delay:.2s}.intake-wave span:nth-child(6){animation-delay:.12s}.intake-wave span:nth-child(7){animation-delay:.24s}.intake-wave span:nth-child(8){animation-delay:.1s}.intake-wave span:nth-child(9){animation-delay:.18s}.intake-wave span:nth-child(10){animation-delay:.02s}.intake-wave span:nth-child(11){animation-delay:.22s}.intake-wave span:nth-child(12){animation-delay:.14s}
@@ -182,8 +188,15 @@ html.motion .orb::before{animation:q-spin 16s linear infinite}
       </form>
       <div class="url-board" id="url-board">
         <p class="desk-kicker">The queue</p>
+        <p class="url-how">Each row is one accepted video. The first column is the URL that was submitted. The second column is the video title, filled in after lookup.</p>
         <p class="url-empty" id="url-empty">No URLs yet.</p>
-        <ol class="url-queue" id="url-queue" aria-label="Queue"></ol>
+        <table class="url-table" id="url-table">
+          <caption class="sr">Accepted videos. The first column is the URL. The second column is the video title.</caption>
+          <thead>
+            <tr><th>URL</th><th>Title</th></tr>
+          </thead>
+          <tbody id="url-queue"></tbody>
+        </table>
       </div>
     </div>
   </section>
@@ -481,9 +494,21 @@ html.motion .orb::before{animation:q-spin 16s linear infinite}
       return "";
     }
   }
+  function queueUrl(item) {
+    if (item && typeof item === "object") return item.url || "";
+    return String(item || "");
+  }
+  function queueTitle(item) {
+    if (item && typeof item === "object" && item.title) return String(item.title);
+    return "";
+  }
+  function queueLookup(item) {
+    if (item && typeof item === "object" && item.lookup) return String(item.lookup);
+    return "";
+  }
   function alreadyQueued(url) {
     var key = youtubeUrl(url);
-    return pending.concat(serverQueue).some(function (item) { return youtubeUrl(item) === key; });
+    return pending.concat(serverQueue).some(function (item) { return youtubeUrl(queueUrl(item)) === key; });
   }
   function isLive(data) {
     if (!data || data.active !== true || data.queue_live !== true || data.accepts_input !== true) return false;
@@ -495,16 +520,31 @@ html.motion .orb::before{animation:q-spin 16s linear infinite}
   function renderQueue() {
     var seen = {};
     var rows = [];
-    pending.concat(serverQueue).forEach(function (url) {
-      var key = youtubeUrl(url);
-      if (!key || seen[key]) return;
+    var serverUrls = serverQueue.map(queueUrl);
+    pending = pending.filter(function (url) { return serverUrls.indexOf(url) === -1; });
+    pending.concat(serverQueue).forEach(function (item) {
+      var url = queueUrl(item);
+      if (!url) return;
+      var key = youtubeUrl(url) || url;
+      if (seen[key]) return;
       seen[key] = true;
-      rows.push(key);
+      var title = queueTitle(item);
+      var failed = queueLookup(item) === "failed";
+      rows.push({
+        url: url,
+        title: title,
+        failed: failed,
+        waiting: !title && !failed && !!youtubeUrl(url)
+      });
     });
-    pending = pending.filter(function (url) { return serverQueue.indexOf(url) === -1; });
-    list.replaceChildren.apply(list, rows.map(function (url) {
-      var item = document.createElement("li");
-      item.textContent = url;
+    list.replaceChildren.apply(list, rows.map(function (row) {
+      var item = document.createElement("tr");
+      var urlCell = document.createElement("td");
+      var titleCell = document.createElement("td");
+      urlCell.textContent = row.url;
+      titleCell.className = "url-title" + (row.waiting || row.failed ? " is-pending" : "");
+      titleCell.textContent = row.title || (row.failed ? "Lookup unsuccessful" : (row.waiting ? "Looking up title…" : ""));
+      item.append(urlCell, titleCell);
       return item;
     }));
     empty.hidden = rows.length > 0;
@@ -520,7 +560,8 @@ html.motion .orb::before{animation:q-spin 16s linear infinite}
     note.textContent = on ? liveCopy : downCopy;
     field.disabled = !on;
     button.disabled = !on;
-    serverQueue = data && Array.isArray(data.queue) ? data.queue.slice() : serverQueue;
+    var incoming = data && Array.isArray(data.entries) ? data.entries : (data && Array.isArray(data.queue) ? data.queue : null);
+    if (incoming) serverQueue = incoming.slice();
     renderQueue();
   }
   function readStatus() {
@@ -550,7 +591,8 @@ html.motion .orb::before{animation:q-spin 16s linear infinite}
         paint(data);
         return null;
       }
-      serverQueue = Array.isArray(data.queue) ? data.queue.slice() : serverQueue;
+      var fresh = Array.isArray(data.entries) ? data.entries : (Array.isArray(data.queue) ? data.queue : null);
+      if (fresh) serverQueue = fresh.slice();
       if (alreadyQueued(url)) {
         renderQueue();
         note.textContent = "That URL is already in the queue.";
@@ -564,9 +606,9 @@ html.motion .orb::before{animation:q-spin 16s linear infinite}
       return fetch(data.upload.url, {method: "POST", body: body}).then(function (response) {
         if (response.status !== 204 && response.status !== 201 && response.status !== 200) throw new Error("refused");
         field.value = "";
-        if (pending.indexOf(url) === -1 && serverQueue.indexOf(url) === -1) pending.unshift(url);
+        if (pending.indexOf(url) === -1 && serverQueue.map(queueUrl).indexOf(url) === -1) pending.unshift(url);
         renderQueue();
-        note.textContent = "Added to the queue.";
+        note.textContent = "Added to the queue. The title fills in on this list once it is looked up.";
       });
     }).catch(function () {
       paint(null);

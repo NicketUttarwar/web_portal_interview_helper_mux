@@ -9,6 +9,8 @@ __pycache__/
 .ruff_cache/
 .DS_Store
 /queue.txt
+/queue.txt.lock
+/queue.txt.tmp
 config/terraform.tfvars
 *.tfstate
 !terraform/state/terraform.tfstate

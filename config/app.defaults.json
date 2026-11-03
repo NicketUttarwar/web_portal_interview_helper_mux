@@ -12,5 +12,6 @@
   "status_object_key": "status.json",
   "status_interval_seconds": 5,
   "status_ttl_seconds": 12,
-  "queue_text_file": "queue.txt"
+  "queue_text_file": "queue.txt",
+  "title_lookup_timeout_seconds": 30
 }
