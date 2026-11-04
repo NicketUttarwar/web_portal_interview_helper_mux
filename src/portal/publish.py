@@ -96,6 +96,7 @@ class QueuePublisher:
         self._last_body: str | None = None
         self._last_error: str | None = None
         self._site_digest: str | None = None
+        self._hero_digest: str | None = None
 
     def publish(self, jobs: list[Job]) -> str | None:
         body = render_queue_html(jobs)
@@ -128,15 +129,35 @@ class QueuePublisher:
             return None
         body = path.read_bytes()
         digest = hashlib.md5(body).hexdigest()
-        if digest == self._site_digest:
+        if digest != self._site_digest:
+            try:
+                self._put("index.html", body, "text/html; charset=utf-8")
+            except (BotoCoreError, ClientError, RuntimeError, OSError) as exc:
+                return self._note_error(exc, "Site page upload failed")
+            self._site_digest = digest
+            self._last_error = None
+            print("Published site page index.html.", flush=True)
+        return self._publish_hero()
+
+    def _publish_hero(self) -> str | None:
+        """Upload the opening portrait next to the homepage.
+
+        The homepage is the only HTML object this process sends. A relative
+        image on that page stays blank in the bucket unless this file goes too.
+        """
+        path = self.settings.root / "site" / "hero.jpg"
+        if not path.is_file():
+            return None
+        body = path.read_bytes()
+        digest = hashlib.md5(body).hexdigest()
+        if digest == self._hero_digest:
             return None
         try:
-            self._put("index.html", body, "text/html; charset=utf-8")
+            self._put("hero.jpg", body, "image/jpeg")
         except (BotoCoreError, ClientError, RuntimeError, OSError) as exc:
-            return self._note_error(exc, "Site page upload failed")
-        self._site_digest = digest
-        self._last_error = None
-        print("Published site page index.html.", flush=True)
+            return self._note_error(exc, "Hero image upload failed")
+        self._hero_digest = digest
+        print("Published site image hero.jpg.", flush=True)
         return None
 
     def publish_presence(self, *, active: bool, run_id: str) -> str | None:

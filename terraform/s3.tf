@@ -40,3 +40,11 @@ resource "aws_s3_object" "index" {
   etag         = filemd5("${path.module}/../site/index.html")
   content_type = "text/html; charset=utf-8"
 }
+
+resource "aws_s3_object" "hero" {
+  bucket       = aws_s3_bucket.zero_shot_media_website.id
+  key          = "hero.jpg"
+  source       = "${path.module}/../site/hero.jpg"
+  etag         = filemd5("${path.module}/../site/hero.jpg")
+  content_type = "image/jpeg"
+}
