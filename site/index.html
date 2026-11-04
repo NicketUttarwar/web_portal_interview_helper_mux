@@ -78,6 +78,13 @@ html.motion .intake-wave span{animation:desk-bar 1.05s ease-in-out infinite}
 .live-bulb{width:18px;height:18px;border-radius:50%;background:#2a3142;box-shadow:inset 0 0 0 2px #5a6478;flex:none}
 .site-head[data-queue="live"] .live-pill,.submit-url[data-queue="live"] .live-pill{background:#6ef0ff;color:#070910;border-color:#6ef0ff;box-shadow:0 0 22px rgba(110,240,255,.8)}
 .site-head[data-queue="live"] .live-bulb,.submit-url[data-queue="live"] .live-bulb{background:#07343a;box-shadow:0 0 0 3px rgba(7,9,16,.18),0 0 14px #fff}
+.submit-head{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;margin:0 0 14px}
+.submit-head .h2{margin:0}
+.submit-url .live-pill{gap:7px;min-height:28px;margin-left:auto;padding:0 10px;border-width:1px;border-radius:8px;font-size:11px;letter-spacing:.1em;flex:none}
+@media (max-width:700px){.submit-head{align-items:flex-start;flex-wrap:wrap}}
+.submit-url .live-bulb{width:10px;height:10px;box-shadow:inset 0 0 0 1px #5a6478}
+.submit-url[data-queue="live"] .live-pill{box-shadow:0 0 12px rgba(110,240,255,.55)}
+.submit-url[data-queue="live"] .live-bulb{box-shadow:0 0 0 2px rgba(7,9,16,.18),0 0 8px #fff}
 .submit-url{padding:clamp(64px,8vw,120px) 0;background:#070910;color:#e6ecf6}
 .submit-url .wrap{max-width:920px}
 .submit-url .lede{max-width:40rem}
@@ -99,7 +106,11 @@ html.motion .intake-wave span{animation:desk-bar 1.05s ease-in-out infinite}
 .submit-url[data-queue="live"] .url-table td{background:#10141f;color:#f5f8ff;border-color:#1c2433}
 @media (max-width:700px){.url-table,.url-table thead,.url-table tbody,.url-table tr,.url-table th,.url-table td{display:block}.url-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.url-table td{border-top:0}.url-table tr{border:1px solid #2a3344;border-radius:12px;overflow:hidden;margin-bottom:8px}.url-table td:first-child{font-size:14px;padding-bottom:0}.url-table td:first-child::before{content:"URL";display:block;margin-bottom:4px;color:#5a6478;font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.08em}.url-table td:last-child::before{content:"Title";display:block;margin-bottom:4px;color:#5a6478;font-family:var(--f-display);font-size:11px;font-weight:700;letter-spacing:.08em}}
 .url-how{margin:0 0 14px;color:#a3b0c7;font-size:15px}
-.url-masters{margin:18px 0 0;max-width:46ch;color:#a3b0c7;font-size:15px}
+.url-masters{margin:36px 0 0;padding:32px 32px 36px;border:1px solid #2a3344;border-radius:20px;background:#12151c}
+.url-masters .desk-kicker{margin:0 0 10px}
+.url-masters h3{margin:0 0 12px;font-family:var(--f-display);font-size:clamp(28px,4vw,44px);font-weight:700;letter-spacing:-.04em;line-height:1.05;color:#f5f8ff}
+.url-masters p{margin:0 0 18px;max-width:42rem;color:#c9d4ea;font-size:18px;line-height:1.5}
+.url-masters .link{font-size:20px}
 .url-empty{margin:0;color:#a3b0c7}
 @media (max-width:700px){.url-form{grid-template-columns:1fr}#url-submit{width:100%}}
 .intake-wave span:nth-child(2){animation-delay:.08s}.intake-wave span:nth-child(3){animation-delay:.16s}.intake-wave span:nth-child(4){animation-delay:.04s}.intake-wave span:nth-child(5){animation-delay:.2s}.intake-wave span:nth-child(6){animation-delay:.12s}.intake-wave span:nth-child(7){animation-delay:.24s}.intake-wave span:nth-child(8){animation-delay:.1s}.intake-wave span:nth-child(9){animation-delay:.18s}.intake-wave span:nth-child(10){animation-delay:.02s}.intake-wave span:nth-child(11){animation-delay:.22s}.intake-wave span:nth-child(12){animation-delay:.14s}
@@ -132,6 +143,9 @@ html.motion .orb::before{animation:q-spin 16s linear infinite}
   .desk-scan,.desk-aurora,.desk-marquee-track,.q-sweep,.q-stage,.q-row::after,.orb::before,.intake-wave span,.win--queue .win-tag{animation:none !important}
 }
 .desk-windows{grid-template-columns:minmax(0,560px)}
+.custom-line{max-width:42rem}
+.custom-line h3{margin:0 0 10px;font-family:var(--f-display);font-size:clamp(22px,2.4vw,32px);font-weight:700;letter-spacing:-.03em;color:#f5f8ff}
+.custom-line p{margin:0;color:var(--haze);font-size:clamp(16px,1.4vw,19px);line-height:1.55}
 .build-run{background:var(--ink);color:var(--pearl);scroll-margin-top:var(--head-h)}
 .build-track{position:relative}
 html.motion .build-track{height:480vh}
@@ -218,12 +232,15 @@ html.motion .house-layer{opacity:0}
 
   <section id="submit" class="submit-url" data-tone="dark" data-queue="down" aria-labelledby="submit-title">
     <div class="wrap">
-      <p class="live-pill" id="section-status">
-        <span class="live-bulb" aria-hidden="true"></span>
-        <span id="section-state">Status off</span>
-      </p>
       <p class="desk-kicker">Queue</p>
-      <h2 class="h2" id="submit-title">Add a YouTube URL</h2>
+      <div class="submit-head">
+        <h2 class="h2" id="submit-title">Try it out yourself</h2>
+        <p class="live-pill" id="section-status">
+          <span class="live-bulb" aria-hidden="true"></span>
+          <span id="section-state">Status off</span>
+        </p>
+      </div>
+      <p class="lede">Add a YouTube URL and magically turn the audio from it into a mastered podcast episode. It works best on interview or topic explainer videos.</p>
       <p class="lede" id="submit-note">Status is off. No new items will be accepted.</p>
       <form class="url-form" id="url-form">
         <label for="youtube-url">YouTube URL</label>
@@ -242,7 +259,12 @@ html.motion .house-layer{opacity:0}
           <tbody id="url-queue"></tbody>
         </table>
       </div>
-      <p class="url-masters">This is where all the final masters live after they are processed: <a class="link" href="https://podcasts.apple.com/us/podcast/zero-shot-podcast-demo/id6825438136">Zero Shot Podcast</a>.</p>
+      <section class="url-masters" aria-label="Zero Shot Podcast">
+        <p class="desk-kicker">Apple Podcasts</p>
+        <h3>Zero Shot Podcast</h3>
+        <p>When a podcast episode is created, it automatically uploads to this Apple Podcast. It generally takes a few hours for an episode to be processed and uploaded.</p>
+        <a class="link" href="https://podcasts.apple.com/us/podcast/zero-shot-podcast-demo/id6825438136">Listen on Apple Podcasts <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+      </section>
     </div>
   </section>
 
@@ -252,7 +274,6 @@ html.motion .house-layer{opacity:0}
     <div class="desk-aurora desk-aurora--b" aria-hidden="true"></div>
     <div class="desk-scan" aria-hidden="true"></div>
     <div class="wrap desk-inner">
-      <p class="desk-kicker">The line</p>
       <h2 class="h2" id="desk-title">One messy tape. One master.</h2>
       <p class="desk-lead">A long interview comes in overlapping, noisy, and full of asides. The app finds the ideal way to say what was actually spoken, keeps the golden stretches, and weaves them with grounded voice and music into <em>master.wav</em>.</p>
       <div class="desk-marquee" aria-hidden="true">
@@ -261,25 +282,9 @@ html.motion .house-layer{opacity:0}
           <span>Local speech</span><span><i>◆</i></span><span>Golden nuggets</span><span><i>◆</i></span><span>Ideal cuts</span><span><i>◆</i></span><span>Language models</span><span><i>◆</i></span><span>Shape</span><span><i>◆</i></span><span>MusicGen</span><span><i>◆</i></span><span>master.wav</span><span><i>◆</i></span><span>Free for now</span><span><i>◆</i></span>
         </div>
       </div>
-      <div class="desk-windows">
-        <article class="win win--queue" id="yours" aria-labelledby="yours-title">
-          <div class="win-bar">
-            <span class="win-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span class="win-name" id="yours-title">your.show</span>
-            <span class="win-tag">Free for now</span>
-          </div>
-          <div class="win-body">
-            <div class="q-stage">
-              <div class="q-sweep" aria-hidden="true"></div>
-              <div class="q-copy">
-                <div>
-                  <strong>Your pipeline</strong>
-                  <p>The bigger offer is a custom line for one creator. We fit this system to your show. You upload the recordings. You get a finished podcast master.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </article>
+      <div class="custom-line" id="yours">
+        <h3>Custom pipelines</h3>
+        <p>We can make custom pipelines for any creator, based on their needs. This demo is free for now, but it showcases how the app works.</p>
       </div>
       </div>
   </section>
@@ -393,35 +398,35 @@ html.motion .house-layer{opacity:0}
             <a class="file-link" href="#files">
               <span class="file-meta"><span class="file-year">01</span><span class="file-topic">Words</span></span>
               <span class="file-body"><h3 class="file-title">Heard, then taken as said</h3><p class="file-text">Local speech models write the words and split the speakers. Full-auto signs that page itself and carries those words into the keep.</p></span>
-              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1602743297108-4c9061884285?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8bW9vZHklMjBkb2N1bWVudGFyeSUyMGludGVydmlldyUyMHJlY29yZGluZ3xlbnwxfHx8fDE3OTM2NjkzNDV8MA&amp;ixlib=rb-4.1.0&amp;fit=crop&amp;auto=format&amp;q=75&amp;w=1000&amp;h=750" alt="A long interview being recorded" width="1000" height="750" loading="lazy"></span>
+              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&amp;fit=crop&amp;q=75&amp;w=1000&amp;h=750" alt="A podcast microphone on a boom arm" width="1000" height="750" loading="lazy"></span>
             </a>
           </li>
           <li class="file">
             <a class="file-link" href="#files">
               <span class="file-meta"><span class="file-year">02</span><span class="file-topic">Nuggets</span></span>
               <span class="file-body"><h3 class="file-title">The stretches worth keeping</h3><p class="file-text">Analysis looks for passionate, information-dense passages that the surrounding talk had buried.</p></span>
-              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1745848413060-0827ec268cda?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8Mnx8bW9vZHklMjBkb2N1bWVudGFyeSUyMGludGVydmlldyUyMHJlY29yZGluZ3xlbnwxfHx8fDE3OTM2NjkzNDV8MA&amp;ixlib=rb-4.1.0&amp;fit=crop&amp;auto=format&amp;q=75&amp;w=1000&amp;h=750" alt="Two people in a recorded conversation" width="1000" height="750" loading="lazy"></span>
+              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&amp;fit=crop&amp;q=75&amp;w=1000&amp;h=750" alt="Studio microphones set for a conversation" width="1000" height="750" loading="lazy"></span>
             </a>
           </li>
           <li class="file">
             <a class="file-link" href="#files">
               <span class="file-meta"><span class="file-year">03</span><span class="file-topic">Cuts</span></span>
               <span class="file-body"><h3 class="file-title">In and out on the idea</h3><p class="file-text">Each keep gets cut points that are easy to hear and still hold the thought together.</p></span>
-              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1516656693094-f46f5af64d6c?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8M3x8bW9vZHklMjBkb2N1bWVudGFyeSUyMGludGVydmlldyUyMHJlY29yZGluZ3xlbnwxfHx8fDE3OTM2NjkzNDV8MA&amp;ixlib=rb-4.1.0&amp;fit=crop&amp;auto=format&amp;q=75&amp;w=1000&amp;h=670" alt="A finished interview session in low light" width="1000" height="670" loading="lazy"></span>
+              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1589903308904-1010c2294adc?auto=format&amp;fit=crop&amp;q=75&amp;w=1000&amp;h=750" alt="Headphones and a microphone beside an audio waveform" width="1000" height="750" loading="lazy"></span>
             </a>
           </li>
           <li class="file">
             <a class="file-link" href="#files">
               <span class="file-meta"><span class="file-year">04</span><span class="file-topic">Shape</span></span>
               <span class="file-body"><h3 class="file-title">A plan for this tape only</h3><p class="file-text">Research reads the run in waves. Shape then picks the story. No show is forced into one template.</p></span>
-              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1615310126233-642c6a0df67a?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NHx8bW9vZHklMjBkb2N1bWVudGFyeSUyMGludGVydmlldyUyMHJlY29yZGluZ3xlbnwxfHx8fDE3OTM2NjkzNDV8MA&amp;ixlib=rb-4.1.0&amp;fit=crop&amp;auto=format&amp;q=75&amp;w=1000&amp;h=667" alt="Sound and room around a conversation" width="1000" height="667" loading="lazy"></span>
+              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1485579149621-3123dd979885?auto=format&amp;fit=crop&amp;q=75&amp;w=1000&amp;h=750" alt="A broadcast microphone" width="1000" height="750" loading="lazy"></span>
             </a>
           </li>
           <li class="file">
             <a class="file-link" href="#files">
               <span class="file-meta"><span class="file-year">05</span><span class="file-topic">Voice</span></span>
               <span class="file-body"><h3 class="file-title">New lines from old words</h3><p class="file-text">Bridges recombine what that speaker already said. They do not invent a claim that was never spoken.</p></span>
-              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1615309871801-6b065d20f50b?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NXx8bW9vZHklMjBkb2N1bWVudGFyeSUyMGludGVydmlldyUyMHJlY29yZGluZ3xlbnwxfHx8fDE3OTM2NjkzNDV8MA&amp;ixlib=rb-4.1.0&amp;fit=crop&amp;auto=format&amp;q=75&amp;w=1000&amp;h=667" alt="A quiet studio waiting for the next tape" width="1000" height="667" loading="lazy"></span>
+              <span class="slot file-photo"><img src="https://images.unsplash.com/photo-1581368135153-a506cf13b1e1?auto=format&amp;fit=crop&amp;q=75&amp;w=1000&amp;h=750" alt="A host speaking into a podcast microphone" width="1000" height="750" loading="lazy"></span>
             </a>
           </li>
         </ul>
@@ -434,7 +439,7 @@ html.motion .house-layer{opacity:0}
   <section id="method" class="method" data-kind="process" data-tone="light">
     <div class="wrap">
       <div class="method-head">
-        <h2 class="h2" data-reveal>How a run moves</h2>
+        <h2 class="h2" data-reveal>How it looks under the hood</h2>
         <p class="lede" data-reveal>The packages under the five passes. Speech, speakers, voice, and music run on this machine.</p>
       </div>
       <ul class="steps" role="list">
@@ -476,7 +481,7 @@ html.motion .house-layer{opacity:0}
     <div class="wrap">
       <div class="people-head">
         <h2 class="h2" data-reveal>About</h2>
-        <p class="lede" data-reveal>Nicket Uttarwar is an artist. He also builds Zero Shot Media and this pipeline.</p>
+        <p class="lede" data-reveal>Nicket Uttarwar is an artist and a developer. He built Zero Shot Media for the custom editing pipeline he needed himself, and he wants to share it.</p>
         <a class="link" href="https://nicketuttarwar.com/" data-reveal>nicketuttarwar.com <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
       </div>
       <ul class="people-grid" role="list">
@@ -496,7 +501,7 @@ html.motion .house-layer{opacity:0}
     <div class="wrap offer-wrap">
       <p class="desk-kicker">Your show</p>
       <h2 class="h2" data-reveal>A pipeline built for one creator</h2>
-      <p class="lede offer-lead" data-reveal>The bigger offer is a custom podcast pipeline. We fit this system to your show: your voices, your taste, your episodes. You upload the recordings. The line hands back a finished master for your own podcast.</p>
+      <p class="lede offer-lead" data-reveal>This is for people outside the media industry, and for individual creators who have a lot to say and no time to learn audio engineering. You upload the recordings. The pipeline is shaped to your voice and your show, and it returns a finished master.</p>
       <p class="lede offer-lead" data-reveal>It is a free service for now. Write <a class="link" href="mailto:nicket@uttarwar.com">nicket@uttarwar.com</a>.</p>
     </div>
   </section>
@@ -505,8 +510,6 @@ html.motion .house-layer{opacity:0}
     <div class="tip-bg"><img data-parallax="7" src="https://images.unsplash.com/photo-1526289034009-0240ddb68ce3?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8ZGFyayUyMGFic3RyYWN0JTIwZ3JpZCUyMGxvdyUyMGRldGFpbHxlbnwxfHx8fDE3OTM2NjkzNDV8MA&amp;ixlib=rb-4.1.0&amp;fit=crop&amp;auto=format&amp;q=75&amp;w=900&amp;h=600" alt="" width="900" height="600" loading="lazy"></div>
     <div class="wrap tip-grid">
       <div class="tip-copy">
-        <h2 class="h2" data-reveal>The developer</h2>
-        <p class="lede" data-reveal>Nicket Uttarwar builds this. The personal site is the longer introduction.</p>
         <ul class="channels" role="list">
           <li class="channel" data-reveal><span class="caps">EMAIL</span><a class="link" href="mailto:nicket@uttarwar.com">nicket@uttarwar.com</a></li>
           <li class="channel" data-reveal><span class="caps">SITE</span><a class="link" href="https://nicketuttarwar.com/">nicketuttarwar.com</a></li>
